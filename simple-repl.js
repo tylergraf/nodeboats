@@ -9,10 +9,6 @@ var board = new five.Board({
   })
 });
 
-board.on('error', function(err) {
-  console.log('error')
-});
-
 board.on("ready", function() {
   console.log("Device Ready..");
   
