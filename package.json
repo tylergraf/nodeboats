@@ -1,0 +1,23 @@
+{
+  "name": "nodeboats",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gmdayley/nodeboats.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gmdayley/nodeboats/issues"
+  },
+  "homepage": "https://github.com/gmdayley/nodeboats#readme",
+  "dependencies": {
+    "johnny-five": "^0.9.51",
+    "particle-io": "^0.12.0"
+  }
+}
