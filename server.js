@@ -11,19 +11,17 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
+app.get('/gamepad', function (req, res) {
+  res.sendfile(__dirname + '/gamepad.html');
+});
+
+
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  socket.emit('hello', { hello: 'world' });
+  
+  socket.on('data', function(data) {
+    console.log('data', data);
+    boat.forward(data.speed || 0);
+    boat.turn(data.degree || 90);
   });
-
-  socket.on('forward', function(data) {
-    console.log('forward');
-    boat.forward(50);
-  });
-
-  socket.on('stop', function(data) {
-    console.log('forward');
-    boat.stop();
-  })
 });
