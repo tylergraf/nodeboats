@@ -1,0 +1,4 @@
+cd client
+polymer build
+cd ..
+npm start

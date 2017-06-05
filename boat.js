@@ -22,20 +22,28 @@ class Boat extends EventEmitter {
     });
 
     this.board.on("ready", () => {
-      this.motorL = new Motor({ pin: DEFAULT_CONFIG.MOTOR_L_PIN });
-      this.motorR = new Motor({ pin: DEFAULT_CONFIG.MOTOR_R_PIN });
-      this.rudder = new Servo(DEFAULT_CONFIG.RUDDER_PIN);
-      this.rudder.to(DEFAULT_CONFIG.RUDDER_START_POS);
+      this.motorBi = new Motor({
+        pins: {
+          dir: 'D1',
+          pwm: 'D2',
+        },
+        invertPWM: true
+      });
+      // this.motorL = new Motor({ pin: DEFAULT_CONFIG.MOTOR_L_PIN });
+      // this.motorR = new Motor({ pin: DEFAULT_CONFIG.MOTOR_R_PIN });
+      // this.rudder = new Servo(DEFAULT_CONFIG.RUDDER_PIN);
+      // this.rudder.to(DEFAULT_CONFIG.RUDDER_START_POS);
       this.emit("ready");
     });
   }
 
   forward(speed) {
-    this.motorL.start(speed); //255 max?
-    this.motorR.start(speed);
+    this.motorBi.forward(speed); //255 max?
   }
 
-  reverse(speed) {}
+  reverse(speed) {
+    this.motorBi.reverse(speed); //255 max?
+  }
 
   turn(degree) {
     this.rudder.to(degree);
@@ -50,3 +58,19 @@ class Boat extends EventEmitter {
 }
 
 module.exports = Boat;
+
+// var boat = new Boat();
+// var direction = true;
+// boat.on("ready", function() {
+//   setInterval(function() {
+//     if (direction) {
+//       console.log(direction);
+//       boat.forward(255);
+//     } else {
+//       console.log(direction);
+//       boat.reverse(255);
+//     }
+//     direction = !direction;
+//   }, 2000);
+// });
+
