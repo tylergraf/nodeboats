@@ -1,0 +1,111 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="socket-io">
+
+  <template></template>
+
+  <script>
+    class SocketIO extends Polymer.Element {
+      static get properties() {
+        return {
+          endpoint: {
+            type: String,
+            value: 'http://localhost:8080'
+          },
+          connected: {
+            type: Boolean,
+            value: false
+          },
+          debug: Boolean,
+        }
+      }
+
+      ready() {
+        super.ready();
+        const head = document.getElementsByTagName('head')[0];
+        const script = document.createElement('script')
+        script.src = this._createClientUrl(this.endpoint)
+        let done = false;
+
+        script.onload = script.onreadystatechange = (function (me) {
+          return function () {
+            if (!done && (!this.readyState || this.readyState === 'loaded' || this.readyState === "complete")) {
+              done = true;
+              me.scriptLoaded = true;
+              me._debug('socket-io script loaded')
+
+              if (me.awaitingConnect) {
+                me.connect()
+              }
+
+              // Handle memory leak in IE
+              script.onload = script.onreadystatechange = null;
+              if (head && script.parentNode) {
+                head.removeChild(script)
+              }
+            }
+          }
+        })(this)
+
+        head.insertBefore(script, head.firstChild)
+      }
+
+      _createClientUrl(endpoint) {
+        if (endpoint.slice(-1) === '/') {
+          return `${endpoint}socket.io/socket.io.js`
+        }
+        return `${endpoint}/socket.io/socket.io.js`
+      }
+
+      _updateMessage(message) {
+        console.log('update message')
+        //TODO
+      }
+
+      _debug(message) {
+        if (this.debug) console.log(message)
+      }
+
+      emit(event, data) {
+        this._debug('emit event')
+
+        try {
+          this.socket && this.socket.emit(event, data)
+        } catch (err) {
+          console.log('Error emitting message', err)
+        }
+      }
+
+      connect() {
+        this._debug('attempting to connect to socket')
+        if (this.scriptLoaded) {
+          this.disconnect();
+          this.socket = io.connect(this.endpoint);
+          this.connected = true;
+          this._debug('successfully connected')
+
+          // register listeners
+          // this.events.forEach((event) => {
+          //   this.socket.on(event.event, event.handler)
+          // })
+        } else {
+          this._debug('waiting for script to be loaded')
+          this.awaitingConnect = true
+        }
+      }
+
+      disconnect() {
+        if (this.socket && this.connected) {
+          this._debug('disconnect')
+          this.socket.disconnect()
+          this.connected = false
+        }
+      }
+
+      static get is() {
+        return 'socket-io'
+      }
+    }
+    customElements.define(SocketIO.is, SocketIO)
+  </script>
+</dom-module>

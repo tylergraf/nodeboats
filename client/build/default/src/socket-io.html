@@ -1,0 +1,91 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="socket-io">
+  <template></template>
+  <script>
+    class SocketIO extends Polymer.Element {
+      static get properties() {
+        return {
+          endpoint: {
+            type: String,
+            value: 'http://localhost:8080'
+          },
+          // isConnected: {
+          //   type: Boolean,
+          //   value: null
+          // }
+        }
+      }
+
+      ready() {
+        super.ready();
+        const head = document.getElementsByTagName('head')[0];
+        const script = document.createElement('script')
+        script.src = this._createClientUrl(this.endpoint)
+        let done = false;
+
+        script.onload = script.onreadystatechange = (function (me) {
+          return function () {
+            if (!done && (!this.readyState || this.readyState === 'loaded' || this.readyState === "complete")) {
+              done = true;
+              me.scriptLoaded = true;
+              console.log('finished loading socket-io script')
+              if (me.awaitingConnect) {
+                console.log('connecting socket')
+                me.connect()
+              }
+
+              // Memory leak IE
+              script.onload = script.onreadystatechange = null;
+              if (head && script.parentNode) {
+                head.removeChild(script)
+              }
+            }
+          }
+        })(this)
+
+        head.insertBefore(script, head.firstChild)
+      }
+
+      _createClientUrl(endpoint) {
+        if (endpoint.slice(-1) === '/') {
+          return `${endpoint}socket.io/socket.io.js`
+        }
+        return `${endpoint}/socket.io/socket.io.js`
+      }
+
+      _updateMessage(message) {
+        console.log('update message')
+        //TODO
+      }
+
+      emit(event, data) {
+        console.log('EMIT', event, data)
+        //TODO
+      }
+
+      connect() {
+        if (this.scriptLoaded) {
+          console.log('connecting')
+          this.disconnect();
+          this.socket = io.connect(this.endpoint);
+          console.log(this.socket)
+          this.socket.emit('test', 'whoop')
+          // this.isConnected = true;
+          // this.events.forEach()
+        } else {
+          this.awaitingConnect = true
+        }
+      }
+
+      disconnect() {
+        //TODO
+      }
+
+      static get is() {
+        return 'socket-io'
+      }
+    }
+    customElements.define(SocketIO.is, SocketIO)
+  </script>
+</dom-module>

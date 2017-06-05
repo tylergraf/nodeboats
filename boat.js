@@ -11,6 +11,7 @@ const DEFAULT_CONFIG = {
 
 class Boat extends EventEmitter {
   constructor() {
+    super();
     const { Motor, Servo } = five;
 
     this.board = new five.Board({
@@ -20,7 +21,7 @@ class Boat extends EventEmitter {
       })
     });
 
-    board.on("ready", () => {
+    this.board.on("ready", () => {
       this.motorL = new Motor({ pin: DEFAULT_CONFIG.MOTOR_L_PIN });
       this.motorR = new Motor({ pin: DEFAULT_CONFIG.MOTOR_R_PIN });
       this.rudder = new Servo(DEFAULT_CONFIG.RUDDER_PIN);
