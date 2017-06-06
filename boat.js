@@ -3,13 +3,14 @@ const five = require("johnny-five");
 const Particle = require("particle-io");
 
 const DEFAULT_CONFIG = {
-  MOTOR_L_PIN: "A4",
-  MOTOR_R_PIN: "A5",
-  RUDDER_PIN: "D0",
-  RUDDER_START_POS: 90
+  MOTORS_PIN_1: "D0", // requires PWM support
+  MOTORS_PIN_2: "D1", // requires PWM support
+  RUDDER_PIN: "D2", // requires PWM support
+  TORPEDO_PIN: "D3" // requires PWM support
 };
 
 class Boat extends EventEmitter {
+
   constructor() {
     super();
     const { Motor, Servo } = five;
@@ -22,55 +23,58 @@ class Boat extends EventEmitter {
     });
 
     this.board.on("ready", () => {
-      this.motorBi = new Motor({
+      this.motors = new Motor({
         pins: {
-          dir: 'D1',
-          pwm: 'D2',
+          dir: DEFAULT_CONFIG.MOTORS_PIN_1,
+          pwm: DEFAULT_CONFIG.MOTORS_PIN_2,
         },
         invertPWM: true
       });
-      // this.motorL = new Motor({ pin: DEFAULT_CONFIG.MOTOR_L_PIN });
-      // this.motorR = new Motor({ pin: DEFAULT_CONFIG.MOTOR_R_PIN });
-      // this.rudder = new Servo(DEFAULT_CONFIG.RUDDER_PIN);
-      // this.rudder.to(DEFAULT_CONFIG.RUDDER_START_POS);
+      this.rudder = new Servo({
+        pin: DEFAULT_CONFIG.RUDDER_PIN, // Which pin is it attached to?
+        range: [45, 135], // Default: 0-180
+        center: true // Starts the servo at the center of the range
+      });
+      this.torpedo = new Servo({
+        pin: DEFAULT_CONFIG.TORPEDO_PIN, // Which pin is it attached to?
+        range: [45, 135], // Default: 0-180
+        startAt: 0 // Immediately move to a degree
+      });
       this.emit("ready");
     });
   }
 
-  forward(speed) {
-    this.motorBi.forward(speed); //255 max?
+  // range 0-255
+  // the motor object will trim the input to the proper range
+  forward(speed) {    
+    this.motors.forward(speed);
   }
 
+  // range 0-255
+  // the motor object will trim the input to the proper range
   reverse(speed) {
-    this.motorBi.reverse(speed); //255 max?
+    this.motors.reverse(speed); //255 max
   }
 
+  // range 0-180 degrees
+  // the servo object will trim the input to the specified range when contructed
   turn(degree) {
     this.rudder.to(degree);
   }
 
+  // moves the torpedo arm to full, and then back after a timeout
+  fireTorpedo(degree) {
+    this.torpedo.to(180);
+    setTimeout(()=>{
+      this.torpedo.to(0);
+    }, 1000)
+  }
+  
   stop() {
     this.motorL.stop();
     this.motorR.stop();
   }
 
-  fire() {}
 }
 
 module.exports = Boat;
-
-// var boat = new Boat();
-// var direction = true;
-// boat.on("ready", function() {
-//   setInterval(function() {
-//     if (direction) {
-//       console.log(direction);
-//       boat.forward(255);
-//     } else {
-//       console.log(direction);
-//       boat.reverse(255);
-//     }
-//     direction = !direction;
-//   }, 2000);
-// });
-
