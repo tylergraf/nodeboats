@@ -3,3 +3,4 @@
 .ipr
 *.env
 node_modules
+bower_components

@@ -2,32 +2,29 @@ const path = require("path");
 var Boat = require("./boat");
 var boat = new Boat();
 
-var express = require("express");
-var app = express();
-var server = require("http").Server(app);
-var io = require("socket.io")(server);
+var forward = true;
+var right = true;
 
-server.listen(8080);
-console.log("HTTP Server listening on port 8080");
+function swapControls(){
 
-app.use(express.static(path.join(__dirname, "client/build/default")));
+  if (!forward) {
+    boat.forward(100); // 0-255
+  } else {
+    boat.reverse(100); // 0-255
+  }
+  forward = !forward;
 
-io.on("connection", function(socket) {
-  socket.emit("hello", { hello: "world" });
+  if (!right) {
+    boat.turn(180);
+  } else {
+    boat.turn(0);
+  }
+  right = !right;
 
-  socket.on("test", function(message) {
-    console.log(message);
-  });
+  boat.fireTorpedo();
 
-  socket.on("data", function(data) {
-    console.log("data", data);
-    if (data.control == 'btnY') {
-      boat.forward(255);
-    } else if (data.control == 'btnA') {
-      boat.reverse(255);
-    }
-    // boat.forward(data.speed || 0);
-    // boat.turn(data.degree || 90);
-  });
+}
 
+boat.on("ready", function(){
+  setInterval(swapControls, 4000);
 });
