@@ -88,6 +88,9 @@
           // this.events.forEach((event) => {
           //   this.socket.on(event.event, event.handler)
           // })
+          this.socket.on("hello", (data)=>{
+            console.log(data);
+          })
         } else {
           this._debug('waiting for script to be loaded')
           this.awaitingConnect = true
