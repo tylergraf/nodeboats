@@ -31,14 +31,15 @@
 
 
       handleBtnDown(event) {
-        console.log(event)
-        this.$.socket.emit('data', {'control': event.detail, 'value': true})
+        // console.log(event)
+        this.$.socket.emit('btnPress', {'control': event.detail, 'value': true})
       }
       handleBtnUp(event) {
-        console.log(event)
+        // console.log(event)
       }
       handleDpad(event) {
         // console.log(event.detail)
+        this.$.socket.emit('dpad', {'dx': event.detail.dx, 'dy': (-1 * event.detail.dy)})
       }
     }
 

@@ -8,9 +8,9 @@ var right = true;
 function swapControls(){
 
   if (!forward) {
-    boat.forward(100); // 0-255
+    boat.forward(255); // 0-255
   } else {
-    boat.reverse(100); // 0-255
+    boat.reverse(255); // 0-255
   }
   forward = !forward;
 

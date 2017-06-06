@@ -19,15 +19,21 @@ io.on("connection", function(socket) {
     console.log(message);
   });
 
-  socket.on("data", function(data) {
-    console.log("data", data);
-    if (data.control == 'btnY') {
-      boat.forward(255);
-    } else if (data.control == 'btnA') {
-      boat.reverse(255);
+  socket.on("btnPress", function(data) {
+    console.log("btnPress", data);
+    if (data.control == "btnA") {
+      boat.fireTorpedo();
     }
-    // boat.forward(data.speed || 0);
-    // boat.turn(data.degree || 90);
+  });
+
+  socket.on("dpad", function(data) {
+    //console.log("dpad", data);
+    if (data.dy > 0) {
+      boat.forward(data.dy * 5);
+    } else if (data.dy < 0) {
+      boat.reverse(data.dy * -5);
+    }
+    boat.turn(90 + (data.dx * 1.8));
   });
 
 });
