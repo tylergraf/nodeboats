@@ -444,8 +444,8 @@
         var joystick = window.JS = new VirtualJoystick({
           mouseSupport: true,
           stationaryBase: true,
-          baseX: dirCursor.getBoundingClientRect().left,
-          baseY: dirCursor.getBoundingClientRect().top,
+          baseX: 195,
+          baseY: 230,
           baseElement: dirCursor,
           limitStickTravel: true,
           stickRadius: 50,
@@ -460,7 +460,7 @@
               dy: joystick._pressed ? joystick.deltaY() : 0
             }
           }))
-        }, 30)
+        }, 100)
 
         //   if (this.debug) {
         //     setInterval(() => {

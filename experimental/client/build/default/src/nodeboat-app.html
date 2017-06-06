@@ -9,7 +9,7 @@
         display: block;
       }
     </style>
-    <socket-io id="socket"></socket-io>
+    <socket-io id="socket" debug=""></socket-io>
     <virtual-gamepad on-btndown="handleBtnDown" on-btnup="handleBtnUp" on-dpad="handleDpad"></virtual-gamepad>
   </template>
 
@@ -29,15 +29,17 @@
         this.$.socket.connect()
       }
 
+
       handleBtnDown(event) {
-        console.log(event)
-        // this.$.socket.emit('aaa')
+        // console.log(event)
+        this.$.socket.emit('btnPress', {'control': event.detail, 'value': true})
       }
       handleBtnUp(event) {
-        console.log(event)
+        // console.log(event)
       }
       handleDpad(event) {
-        console.log(event.detail)
+        // console.log(event.detail)
+        this.$.socket.emit('dpad', {'dx': event.detail.dx, 'dy': (-1 * event.detail.dy)})
       }
     }
 

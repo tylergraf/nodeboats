@@ -10,7 +10,7 @@
         left: 0px;
         height: 100%;
         width: 35%;
-        background-color: rgba(212, 44, 33, .5)
+        /*background-color: rgba(212, 44, 33, .5)*/
       }
     </style>
 
@@ -287,29 +287,29 @@
         })
 
         // Create Joystick
-        // var dirCursor = this.shadowRoot.getElementById("dirCenter");
-        // console.log(this.shadowRoot, dirCursor)
-        // var container = this.shadowRoot.getElementById("dirContainer");
-        // var joystick = window.JS = new VirtualJoystick({
-        //   mouseSupport: true,
-        //   stationaryBase: true,
-        //   baseX: dirCursor.getBoundingClientRect().left,
-        //   baseY: dirCursor.getBoundingClientRect().top,
-        //   baseElement: dirCursor,
-        //   limitStickTravel: true,
-        //   stickRadius: 50,
-        //   container: container,
-        //   strokeStyle: '#777f82'
-        // });
+        var dirCursor = this.shadowRoot.getElementById("dirCenter");
+        console.log(this.shadowRoot, dirCursor)
+        var container = this.shadowRoot.getElementById("dirContainer");
+        var joystick = window.JS = new VirtualJoystick({
+          mouseSupport: true,
+          stationaryBase: true,
+          baseX: 195,
+          baseY: 230,
+          baseElement: dirCursor,
+          limitStickTravel: true,
+          stickRadius: 50,
+          container: container,
+          strokeStyle: '#777f82'
+        });
 
-        //   setInterval(() => {
-        //     this.dispatchEvent(new CustomEvent('dpad', {
-        //       detail: {
-        //         dx: joystick._pressed ? joystick.deltaX() : 0,
-        //         dy: joystick._pressed ? joystick.deltaY() : 0
-        //       }
-        //     }))
-        //   }, 10)
+        setInterval(() => {
+          this.dispatchEvent(new CustomEvent('dpad', {
+            detail: {
+              dx: joystick._pressed ? joystick.deltaX() : 0,
+              dy: joystick._pressed ? joystick.deltaY() : 0
+            }
+          }))
+        }, 30)
 
         //   if (this.debug) {
         //     setInterval(() => {
