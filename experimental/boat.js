@@ -38,7 +38,8 @@ class Boat extends EventEmitter {
       this.torpedo = new Servo({
         pin: DEFAULT_CONFIG.TORPEDO_PIN, // Which pin is it attached to?
         range: [45, 135], // Default: 0-180
-        startAt: 0 // Immediately move to a degree
+        startAt: 0, // Immediately move to a degree
+        invert: true,
       });
       this.emit("ready");
     });
@@ -46,7 +47,7 @@ class Boat extends EventEmitter {
 
   // range 0-255
   // the motor object will trim the input to the proper range
-  forward(speed) {    
+  forward(speed) {
     this.motors.forward(speed);
   }
 
@@ -62,14 +63,16 @@ class Boat extends EventEmitter {
     this.rudder.to(degree);
   }
 
-  // moves the torpedo arm to full, and then back after a timeout
-  fireTorpedo(degree) {
+  // moves the torpedo arm to full
+  fireTorpedo() {
     this.torpedo.to(180);
-    setTimeout(()=>{
-      this.torpedo.to(0);
-    }, 1000)
   }
-  
+
+  // moves the torpedo arm to 0
+  reloadTorpedo() {
+    this.torpedo.to(0);
+  }
+
   stop() {
     this.motorL.stop();
     this.motorR.stop();
