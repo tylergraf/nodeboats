@@ -1,52 +1,83 @@
-var util = require("util");
-var EventEmitter = require("events").EventEmitter;
-var five = require("johnny-five");
-var Particle = require("particle-io");
+const EventEmitter = require("events").EventEmitter;
+const five = require("johnny-five");
+const Particle = require("particle-io");
 
+const DEFAULT_CONFIG = {
+  MOTORS_PIN_1: "D0", // requires PWM support
+  MOTORS_PIN_2: "D1", // requires PWM support
+  RUDDER_PIN: "D2", // requires PWM support
+  TORPEDO_PIN: "D3" // requires PWM support
+};
 
-function Boat() {
-  EventEmitter.call(this);
+class Boat extends EventEmitter {
+  constructor() {
+    super();
+    const { Motor, Servo } = five;
 
-  var board = new five.Board({
-    io: new Particle({
-      token: process.env.PARTICLE_TOKEN,
-      deviceId: process.env.PARTICLE_DEVICE_ID
-    })
-  });
-  
-  
-  board.on("ready", function () {
-    console.log("Device Ready..");
+    this.board = new five.Board({
+      io: new Particle({
+        token: process.env.PARTICLE_TOKEN,
+        deviceId: process.env.PARTICLE_DEVICE_ID
+      })
+    });
 
-    this.motorL = new five.Motor({ pin: 'A4'});
-    this.motorR = new five.Motor({ pin: 'A5'});
-    this.rudder = new five.Servo("D0");
+    this.board.on("ready", () => {
+      this.motor1 = new Motor({
+        pins: {
+          dir: DEFAULT_CONFIG.MOTORS_PIN_1,
+          pwm: DEFAULT_CONFIG.MOTORS_PIN_2
+        },
+        invertPWM: true
+      });
 
-    this.rudder.to(90);
-    
-    this.emit('ready');
+      this.rudder = new Servo({
+        pin: DEFAULT_CONFIG.RUDDER_PIN, // Which pin is it attached to?
+        range: [10, 170], // Default: 0-180
+        center: true // Starts the servo at the center of the range
+      });
 
-  }.bind(this));
+      this.torpedo = new Servo({
+        pin: DEFAULT_CONFIG.TORPEDO_PIN, // Which pin is it attached to?
+        range: [10, 170], // Default: 0-180
+        startAt: 0, // Immediately move to a degree
+        invert: true
+      });
+      this.emit("ready");
+    });
+  }
 
-  this.board = board;
+  // range 0-255
+  // the motor object will trim the input to the proper range
+  forward(speed) {
+    this.motor1.forward(speed);
+  }
+
+  // range 0-255
+  // the motor object will trim the input to the proper range
+  reverse(speed) {
+    this.motor1.reverse(speed); //255 max
+  }
+
+  // range 0-180 degrees
+  // the servo object will trim the input to the specified range when contructed
+  turn(degree) {
+    this.rudder.to(degree);
+  }
+
+  // moves the torpedo arm to full
+  fireTorpedo() {
+    console.log("fire");
+    this.torpedo.to(180);
+  }
+
+  // moves the torpedo arm to 0
+  reloadTorpedo() {
+    this.torpedo.to(0);
+  }
+
+  stop() {
+    this.motor1.forward(0);
+  }
 }
-util.inherits(Boat, EventEmitter);
-
-
-Boat.prototype.forward = function(speed) {
-  this.motorL.start(speed);
-  this.motorR.start(speed);
-};
-
-Boat.prototype.stop = function(speed) {
-  this.motorL.stop();
-  this.motorR.stop();
-};
-
-Boat.prototype.turn = function(degree) {
-  this.rudder.to(degree);
-};
-
-
 
 module.exports = Boat;
